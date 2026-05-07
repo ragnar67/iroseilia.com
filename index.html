@@ -1,0 +1,277 @@
+Export default {
+  async fetch(request) {
+    const html = `
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROSELIA | مملكة روسيليا</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --neon-blue: #00d4ff; 
+            --dark-bg: #050505; 
+            --gold: #c5a059; 
+            --card-bg: #0d0d0d; 
+            --neon-green: #39ff14; 
+            --crimson: #ff003c; 
+            --ruble-gold: #ffcc00; 
+            --shadow-white: #ffffff;
+        }
+        body, html { background-color: var(--dark-bg); color: white; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; overflow-x: hidden; scroll-behavior: smooth; }
+
+        /* الخلفية والزخارف النيونية */
+        .bg-pattern { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.15; pointer-events: none; }
+        .shape { position: absolute; border: 1px solid var(--neon-blue); animation: rotate 20s linear infinite; box-shadow: 0 0 15px var(--neon-blue); border-radius: 50%; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* الهيدر */
+        .top-header { width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; padding: 20px; margin: 0 auto; position: sticky; top:0; background: rgba(5,5,5,0.95); z-index: 2000; backdrop-filter: blur(10px); border-bottom: 1px solid #111; }
+        .header-name { color: var(--neon-blue); font-weight: bold; font-size: 1.4rem; text-shadow: 0 0 15px var(--neon-blue); }
+        .menu-btn { width: 45px; height: 45px; background: rgba(0, 212, 255, 0.1); border: 1px solid var(--neon-blue); border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer; box-shadow: 0 0 10px var(--neon-blue); }
+        .menu-btn div { width: 22px; height: 2px; background: var(--neon-blue); }
+
+        /* القائمة الجانبية */
+        .drawer { position: fixed; top: 0; right: -320px; width: 280px; height: 100%; background: #080808; border-left: 1px solid var(--neon-blue); z-index: 9000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); padding-top: 80px; }
+        .drawer.active { right: 0; box-shadow: -10px 0 30px rgba(0, 212, 255, 0.2); }
+        .drawer-item { padding: 18px 25px; border-bottom: 1px solid #111; color: white; display: flex; align-items: center; gap: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .drawer-item:hover { color: var(--neon-blue); background: rgba(0, 212, 255, 0.05); }
+
+        /* الواجهة الرئيسية */
+        #mainUI { display: flex; flex-direction: column; align-items: center; padding-bottom: 50px; }
+        .main-logo { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--neon-blue); box-shadow: 0 0 25px var(--neon-blue); margin: 20px 0; }
+
+        /* السلايدر */
+        .slider-container { width: 92%; max-width: 450px; height: 230px; margin: 20px 0; position: relative; border-radius: 25px; overflow: hidden; border: 2px solid var(--neon-blue); box-shadow: 0 0 20px var(--neon-blue); }
+        .slider-track { display: flex; width: 400%; height: 100%; transition: transform 0.8s ease-in-out; }
+        .slide { width: 25%; height: 100%; position: relative; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; }
+        .slide-name { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: var(--neon-blue); padding: 5px 20px; border-radius: 12px; border: 1px solid var(--neon-blue); font-weight: bold; box-shadow: 0 0 10px var(--neon-blue); }
+
+        /* القوائم المضيئة */
+        .menu-list { width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 15px; }
+        .menu-item { background: var(--card-bg); border: 1px solid #1a1a1a; border-radius: 20px; padding: 22px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.4s; position: relative; }
+        .menu-item:hover { border-color: var(--neon-blue); transform: translateY(-5px); box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3); }
+        
+        /* ستايل شراء الروبل الأسطوري */
+        .buy-ruble-special { background: linear-gradient(135deg, #0d0d0d, #1a1a00) !important; border: 2px solid var(--ruble-gold) !important; box-shadow: 0 0 20px var(--ruble-gold) !important; }
+
+        .join-now-red { border: 2px solid var(--crimson) !important; box-shadow: 0 0 20px var(--crimson) !important; animation: pulseRed 2s infinite; }
+        @keyframes pulseRed { 0% { box-shadow: 0 0 10px var(--crimson); } 50% { box-shadow: 0 0 30px var(--crimson); } 100% { box-shadow: 0 0 10px var(--crimson); } }
+
+        .shadow-org-item { border: 2px solid #555 !important; background: linear-gradient(145deg, #000, #1a1a1a); box-shadow: 0 0 20px #333 !important; }
+        .shadow-org-item b { color: #fff; text-shadow: 0 0 10px #fff; }
+
+        /* النوافذ */
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: #000; overflow-y: auto; }
+        .modal-content { padding: 40px 20px; max-width: 500px; margin: 0 auto; animation: slideUp 0.5s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* قسم شراء الروبل داخل المودال */
+        .ruble-buy-bg { background: radial-gradient(circle at top, #1a1a00 0%, #050505 70%); min-height: 100vh; }
+        .ruble-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .ruble-card { background: rgba(255, 204, 0, 0.05); border: 1px solid rgba(255, 204, 0, 0.2); padding: 15px; border-radius: 15px; text-align: center; transition: 0.3s; cursor: pointer; }
+        .ruble-card:hover { border-color: var(--ruble-gold); background: rgba(255, 204, 0, 0.1); transform: scale(1.02); }
+        .ruble-card .price-tag { color: var(--neon-green); font-size: 1.2rem; font-weight: bold; display: block; }
+        .ruble-card .amount-tag { color: var(--ruble-gold); font-size: 0.9rem; margin-top: 5px; display: block; }
+
+        /* الكروت */
+        .card { background: #0c0c0c; border: 1px solid #1a1a1a; border-radius: 25px; padding: 25px; margin-bottom: 25px; text-align: center; border-top: 3px solid var(--neon-blue); display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .card-img { width: 115px; height: 115px; border-radius: 22px; border: 2px solid var(--neon-blue); margin-bottom: 15px; object-fit: cover; box-shadow: 0 0 15px var(--neon-blue); }
+        .wa-btn { background: var(--neon-blue); color: black; padding: 14px; border-radius: 15px; text-decoration: none; font-weight: bold; width: 100%; display: block; margin-top: 15px; text-align: center; box-shadow: 0 0 10px var(--neon-blue); }
+        
+        .info-box { background: #0a0a0a; border: 1px solid #151515; padding: 18px; border-radius: 18px; margin-bottom: 15px; border-right: 5px solid var(--neon-blue); font-size: 0.95rem; text-align: right; width: 100%; box-sizing: border-box; line-height: 1.7; box-shadow: 0 0 10px rgba(0, 212, 255, 0.1); }
+        .rank-green { color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); font-weight: bold; }
+        .back-btn { background: #111; border: 1px solid #333; color: white; padding: 16px; border-radius: 18px; width: 100%; cursor: pointer; margin-top: 25px; font-weight: bold; box-shadow: 0 0 10px #222; }
+
+        /* عروض التجار والبانرات */
+        .trader-section { margin-top: 50px; border-top: 2px dashed #333; padding-top: 30px; }
+        .trader-banner { width: 100%; border-radius: 20px; border: 2px solid var(--neon-green); margin-bottom: 20px; box-shadow: 0 0 20px var(--neon-green); }
+        .branch-banner { width: 100%; border-radius: 20px; overflow: hidden; margin-bottom: 25px; border: 2px solid #222; position: relative; }
+        .branch-banner img { width: 100%; height: 160px; object-fit: cover; opacity: 0.6; }
+        .branch-info { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; text-align: right; }
+        .banner-glow { border: 2px solid var(--gold) !important; box-shadow: 0 0 25px var(--gold); }
+
+        .discount-banner { background: var(--crimson); color: white; padding: 18px; border-radius: 20px; font-weight: bold; margin-bottom: 30px; display: flex; align-items: center; gap: 15px; border: 2px solid white; box-shadow: 0 0 20px var(--crimson); }
+        .top-badge { position: absolute; top: 15px; left: 15px; background: var(--gold); color: black; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 0.8rem; z-index: 10; box-shadow: 0 0 10px var(--gold); }
+
+        .footer { text-align: center; padding: 40px; color: #444; font-size: 0.85rem; width: 100%; border-top: 1px solid #111; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-pattern"><div class="shape" style="width:150px; height:150px; top:10%; left:5%;"></div></div>
+
+    <div id="sideDrawer" class="drawer">
+        <div class="drawer-item" onclick="window.open('https://chat.whatsapp.com/EdBqxk3N6lKF3fcGoBnNTM?mode=gi_t', '_blank')" style="color:var(--crimson)">🔥 انضم للمملكة الآن</div>
+        <div class="drawer-item" onclick="openSection('buyRubleModal')" style="color:var(--ruble-gold)">💰 شراء الروبل ($)</div>
+        <div class="drawer-item" onclick="openSection('storeModal')">🛒 متجر روسيليا</div>
+        <div class="drawer-item" onclick="openSection('shadowModal')">🌑 منظمة الظلال</div>
+        <div class="drawer-item" onclick="openSection('promoModal')">🏛️ بروتوكول الترقيات</div>
+        <div class="drawer-item" onclick="openSection('lawsModal')">⚖️ دستور المملكة</div>
+        <div class="drawer-item" onclick="openSection('adminModal')">👑 الإدارة العليا</div>
+        <div class="drawer-item" onclick="openSection('modsModal')">🎖️ مجلس المشرفين</div>
+        <div class="drawer-item" onclick="openSection('branchesModal')">🌐 فروع المملكة</div>
+        <div class="drawer-item" onclick="openSection('servicesModal')">💎 خدماتنا المتميزة</div>
+        <div class="drawer-item" onclick="toggleDrawer()" style="color:var(--crimson); margin-top:30px;">إغلاق القائمة ×</div>
+    </div>
+
+    <div id="mainUI">
+        <div class="top-header">
+            <div class="header-name">R O S Ξ L I Λ</div>
+            <div class="menu-btn" onclick="toggleDrawer()"><div></div><div></div><div></div></div>
+        </div>
+        <img src="logo.png" class="main-logo">
+        
+        <div class="slider-container">
+            <div class="slider-track" id="slider">
+                <div class="slide"><img src="onepiece.png"><div class="slide-name">ONE PIECE</div></div>
+                <div class="slide"><img src="bleach.png"><div class="slide-name">BLEACH</div></div>
+                <div class="slide"><img src="rezero.png"><div class="slide-name">RE:ZERO</div></div>
+                <div class="slide"><img src="naruto.png"><div class="slide-name">NARUTO</div></div>
+            </div>
+        </div>
+
+        <div class="menu-list">
+            <div class="menu-item join-now-red" onclick="window.open('https://chat.whatsapp.com/EdBqxk3N6lKF3fcGoBnNTM?mode=gi_t', '_blank')"><div><b style="color:var(--crimson); margin-left:10px;">HOT</b><b style="color:var(--crimson)">انضم الى المملكة الآن</b></div><span>←</span></div>
+            <div class="menu-item buy-ruble-special" onclick="openSection('buyRubleModal')"><div><b style="color:var(--ruble-gold); margin-left:10px;">NEW</b><b style="color:var(--ruble-gold)">شراء الروبل (باقات $)</b></div><span>←</span></div>
+            
+            <div class="menu-item" onclick="openSection('storeModal')"><div><b style="color:var(--neon-blue); margin-left:10px;">01</b><b>متجر روسيليا الرسمي</b></div><span>←</span></div>
+            <div class="menu-item" onclick="openSection('adminModal')"><div><b style="color:var(--neon-blue); margin-left:10px;">02</b><b>الإدارة العليا</b></div><span>←</span></div>
+            <div class="menu-item" onclick="openSection('modsModal')"><div><b style="color:var(--neon-blue); margin-left:10px;">03</b><b>مجلس المشرفين</b></div><span>←</span></div>
+            <div class="menu-item" onclick="openSection('branchesModal')"><div><b style="color:var(--neon-blue); margin-left:10px;">04</b><b>فروع المملكة</b></div><span>←</span></div>
+            <div class="menu-item shadow-org-item" onclick="openSection('shadowModal')"><div><b style="margin-left:10px;">05</b><b>منظمة الظلال</b></div><span>←</span></div>
+            <div class="menu-item" onclick="openSection('servicesModal')" style="border-color:var(--gold); box-shadow: 0 0 15px var(--gold);"><div><b style="color:var(--gold); margin-left:10px;">💎</b><b>خدماتنا المتميزة</b></div><span style="color:var(--gold)">←</span></div>
+        </div>
+        <div class="footer"><div>روسيليا - جميع الحقوق محفوظة آيزن-مطور © 2026</div><img src="https://count.getloli.com/get/@roselia_imperial_final?theme=moebooru" style="height:25px; margin-top:10px;"></div>
+    </div>
+
+    <div id="buyRubleModal" class="modal ruble-buy-bg"><div class="modal-content">
+        <h2 style="text-align:center; color:var(--ruble-gold); text-shadow: 0 0 20px var(--ruble-gold);">💰 متجر شراء الروبل</h2>
+        <div class="ruble-grid">
+            <div class="ruble-card" onclick="location.href='https://wa.me/966502518285?text=اريد شراء 30 روبل بـ 1 دولار'"><span class="price-tag">1 دولار</span><span class="amount-tag">30 روبل ₽</span></div>
+            <div class="ruble-card" onclick="location.href='https://wa.me/966502518285?text=اريد شراء 60 روبل بـ 2 دولار'"><span class="price-tag">2 دولار</span><span class="amount-tag">60 روبل ₽</span></div>
+            <div class="ruble-card" onclick="location.href='https://wa.me/966502518285?text=اريد شراء 150 روبل بـ 5 دولار'"><span class="price-tag">5 دولار</span><span class="amount-tag">150 روبل ₽</span></div>
+            <div class="ruble-card" onclick="location.href='https://wa.me/966502518285?text=اريد شراء 300 روبل بـ 10 دولار'"><span class="price-tag">10 دولار</span><span class="amount-tag">300 روبل ₽</span></div>
+            <div class="ruble-card" onclick="location.href='https://wa.me/966502518285?text=اريد شراء 450 روبل بـ 15 دولار'"><span class="price-tag">15 دولار</span><span class="amount-tag">450 روبل ₽</span></div>
+            <div class="ruble-card" onclick="location.href='https://wa.me/966502518285?text=اريد شراء 600 روبل بـ 20 دولار'"><span class="price-tag">20 دولار</span><span class="amount-tag">600 روبل ₽</span></div>
+            <div class="ruble-card" onclick="location.href='https://wa.me/966502518285?text=اريد شراء 1500 روبل بـ 50 دولار'"><span class="price-tag">50 دولار</span><span class="amount-tag">1,500 روبل ₽</span></div>
+            <div class="ruble-card" onclick="location.href='https://wa.me/966502518285?text=اريد شراء 3000 روبل بـ 100 دولار'"><span class="price-tag">100 دولار</span><span class="amount-tag">3,000 روبل ₽</span></div>
+            <div class="ruble-card" style="grid-column: span 2;" onclick="location.href='https://wa.me/966502518285?text=اريد شراء 4500 روبل بـ 150 دولار'"><span class="price-tag">150 دولار</span><span class="amount-tag">4,500 روبل ₽</span></div>
+        </div>
+        <div class="info-box" style="border-color:var(--crimson); color:#eee; font-size:0.85rem; margin-top:30px;">
+            <b style="color:var(--crimson); display:block;">⚠️ ملاحظة هامة:</b>
+            يتم بيع الروبل بناءً على صرف بوت (Nun_SMSBot). الروبل يُباع وفقاً لقيمته داخل البوت وليس أسعار صرف العملات العالمية.
+        </div>
+        <button class="back-btn" onclick="backHome()">العودة للرئيسية</button>
+    </div></div>
+
+    <div id="adminModal" class="modal"><div class="modal-content">
+        <h2 style="text-align:center; color:var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue);">👑 الإدارة العليا</h2>
+        <div class="card"><img src="admin.png" class="card-img"><b>شانكس ♨️🇦🇲</b><p>المؤسس والمطور المسؤول عن رؤية المملكة</p><a href="https://wa.me/966502518285" class="wa-btn">واتساب المؤسس</a></div>
+        <div class="card" style="border-top-color:var(--crimson)"><img src="ayano.png" class="card-img"><b>أيانو ♟️🏴</b><p>ملازم ثاني | المسؤول عن الرقابة والنظام</p><a href="https://wa.me/212704473199" class="wa-btn" style="background:var(--crimson)">واتساب الملازم</a></div>
+        <div class="card" style="border-top-color:var(--neon-green)"><img src="izen.png" class="card-img"><b>آيزن 🛡️ (مستر رغنار)</b><p>المبرمج والمطور والمدير العام التقني</p><a href="https://wa.me/966599574256" class="wa-btn" style="background:var(--neon-green); color:black;">واتساب المبرمج</a></div>
+        <div class="card" style="border-top-color:var(--neon-blue)"><img src="zoro.png" class="card-img"><b>زورو ⚔️</b><p>ملازم أول | حماية النظام وقائد ميداني</p><a href="https://wa.me/201066147253" class="wa-btn">واتساب الملازم</a></div>
+        <button class="back-btn" onclick="backHome()">العودة للرئيسية</button>
+    </div></div>
+
+    <div id="modsModal" class="modal"><div class="modal-content">
+        <h2 style="text-align:center; color:var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue);">🎖️ مجلس المشرفين</h2>
+        <div class="info-box" style="text-align:center; border-right:none; border-bottom:3px solid var(--neon-blue);">مجلس المشرفين قيد إعادة التعيين...</div>
+        <button class="back-btn" onclick="backHome()">العودة</button>
+    </div></div>
+
+    <div id="shadowModal" class="modal"><div class="modal-content">
+        <h2 style="text-align:center; color:#fff; text-shadow: 0 0 20px #fff;">🌑 منظمة الظلال (S.O.G)</h2>
+        <div class="card" style="border-color:#555;">
+            <img src="cod.png" class="card-img" style="border-color:#fff; box-shadow: 0 0 15px #fff;">
+            <div style="font-weight:bold; font-size:1.4rem; color:#fff;">S.O.G - Shadow Operations Group</div>
+            <div class="info-box" style="border-color:var(--gold); color:var(--gold); font-weight:bold; margin-top:20px; text-align:center; box-shadow: 0 0 15px var(--gold);">
+                عرض لأعضاء روسيليا فقط لا غير ⚜️<br>
+                📜 تـنـبـيـه لـكـل مـن يـهـمـه الـأمر📜<br>
+                التفاعل يوميا بـ 550 رسالة = 30 روبل ✨<br>
+                كل 15+ عضو للنقابة = 50 روبل 🌟
+            </div>
+            <a href="https://whatsapp.com/channel/0029VbBosAXJ93wNWEUgPx2P" class="wa-btn" style="background:#fff; color:black; border:none; box-shadow: 0 0 15px #fff;">الانضمام للقناة الرسمية</a>
+        </div>
+        <button class="back-btn" onclick="backHome()">العودة</button>
+    </div></div>
+
+    <div id="storeModal" class="modal"><div class="modal-content">
+        <h2 style="text-align:center; color:var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue);">🛒 متجر روسيليا</h2>
+        <div class="menu-list" style="width:100%">
+            <div class="menu-item" onclick="openSection('oldGroupsModal')" style="border-color:var(--neon-blue)"><div><b>قروبات تأسيس قديم</b></div><span>←</span></div>
+        </div>
+        <button class="back-btn" onclick="backHome()">العودة</button>
+    </div></div>
+
+    <div id="oldGroupsModal" class="modal"><div class="modal-content">
+        <div class="discount-banner"><img src="shank.png" style="width:55px; border-radius:50%; border:2px solid white;"><div>خصم 20% حصري لمواطني روسيليا! 🔥</div></div>
+        
+        <h3 style="color:var(--neon-blue); text-align:center; border-bottom:1px solid #222; padding-bottom:15px; text-shadow: 0 0 10px var(--neon-blue);">🛡️ قروبات المؤسس (نادرة)</h3>
+
+        <div class="card" style="border-top-color:#555;"><div class="top-badge">Top 1</div><img src="kp1.png" class="card-img" style="filter: grayscale(1);"><b>تأسيس 2012</b><div style="color:var(--crimson); text-decoration: line-through; font-weight:bold;">210 روبل</div><div class="wa-btn" style="background:#222; color:#555; pointer-events:none; border:1px solid #333;">مـبـيـوع</div></div>
+        <div class="card"><div class="top-badge">Top 2</div><img src="kp2.png" class="card-img"><b>تأسيس 2013</b><div class="rank-green">130 روبل</div><a href="https://wa.me/966502518285?text=اريد شراء قروب تاسيس 2013" class="wa-btn">شراء الآن</a></div>
+        <div class="card"><div class="top-badge">New</div><img src="kon8.png" class="card-img"><b>تأسيس 2014</b><div class="rank-green">180 روبل</div><a href="https://wa.me/966502518285?text=اريد شراء قروب تاسيس 2014" class="wa-btn">شراء الآن</a></div>
+        <div class="card" style="border-top-color:#555;"><img src="kong.png" class="card-img"><b>تأسيس 2016</b><div style="color:var(--crimson); text-decoration: line-through; font-weight:bold;">100 روبل</div><div class="wa-btn" style="background:#222; color:#555; pointer-events:none; border:1px solid #333;">مـبـيـوع</div></div>
+        <div class="card"><div class="top-badge">Top 3</div><img src="twn4.png" class="card-img"><b>تأسيس 2018</b><div class="rank-green">85 روبل</div><a href="https://wa.me/966502518285?text=اريد شراء قروب تاسيس 2018" class="wa-btn">شراء</a></div>
+        <div class="card"><div class="top-badge">Top 4</div><img src="twn3.png" class="card-img"><b>تأسيس 2019</b><div class="rank-green">70 روبل</div><a href="https://wa.me/966502518285?text=اريد شراء قروب تاسيس 2019" class="wa-btn">شراء</a></div>
+        <div class="card"><div class="top-badge">Top 5</div><img src="twn2.png" class="card-img"><b>تأسيس 2020</b><div class="rank-green">60 روبل</div><a href="https://wa.me/966502518285?text=اريد شراء قروب تاسيس 2020" class="wa-btn">شراء</a></div>
+        <div class="card"><div class="top-badge">Top 6</div><img src="twn1.png" class="card-img"><b>تأسيس 2021</b><div class="rank-green">40 روبل</div><a href="https://wa.me/966502518285?text=اريد شراء قروب تاسيس 2021" class="wa-btn">شراء</a></div>
+
+        <div class="trader-section">
+            <h2 style="color:var(--neon-green); text-align:center;">📦 عروض التجار الحصرية</h2>
+            <div style="background:var(--neon-green); color:black; font-weight:bold; padding:8px 20px; border-radius:10px; margin-bottom:15px; display:inline-block;">التاجر الأول :</div>
+            <img src="trader1.png" class="trader-banner">
+            <div class="card" style="border-top-color:var(--neon-green);"><img src="op4.png" class="card-img" style="border-color:var(--neon-green);"><b style="color:var(--neon-green)">تأسيس 2023</b><div class="rank-green">25 روبل</div><a href="https://wa.me/966502518285?text=اريد شراء من التاجر: تاسيس 2023" class="wa-btn" style="background:var(--neon-green); color:black;">شراء عبر الوسيط</a></div>
+            <div class="card" style="border-top-color:var(--neon-green);"><img src="op2.png" class="card-img" style="border-color:var(--neon-green);"><b style="color:var(--neon-green)">تأسيس 2024</b><div class="rank-green">15 روبل</div><a href="https://wa.me/966502518285?text=اريد شراء من التاجر: تاسيس 2024" class="wa-btn" style="background:var(--neon-green); color:black;">شراء عبر الوسيط</a></div>
+            <div class="card" style="border-top-color:var(--neon-green);"><img src="op3.png" class="card-img" style="border-color:var(--neon-green);"><b style="color:var(--neon-green)">تأسيس 2024 (مكرر)</b><div class="rank-green">15 روبل</div><a href="https://wa.me/966502518285?text=اريد شراء من التاجر: تاسيس 2024 مكرر" class="wa-btn" style="background:var(--neon-green); color:black;">شراء عبر الوسيط</a></div>
+            <div class="card" style="border-top-color:var(--neon-green);"><img src="op1.png" class="card-img" style="border-color:var(--neon-green);"><b style="color:var(--neon-green)">تأسيس 2025</b><div class="rank-green">10 روبل</div><a href="https://wa.me/966502518285?text=اريد شراء من التاجر: تاسيس 2025" class="wa-btn" style="background:var(--neon-green); color:black;">شراء عبر الوسيط</a></div>
+        </div>
+
+        <button class="back-btn" onclick="openSection('storeModal')">رجوع للمتجر</button>
+    </div></div>
+
+    <div id="servicesModal" class="modal"><div class="modal-content">
+        <h2 style="text-align:center; color:var(--gold); text-shadow: 0 0 15px var(--gold);">💎 خدماتنا المتميزة</h2>
+        <div class="info-box" style="border-color:var(--gold);"><b>تصميم مواقع احترافية - LVL 1</b><br>السعر: 25 روبل</div>
+        <div class="info-box" style="border-color:var(--gold);"><b>تصميم مواقع احترافية - LVL 2</b><br>السعر: 45 روبل</div>
+        <div class="info-box" style="border-color:var(--gold);"><b>تصميم مواقع احترافية - LVL 3</b><br>السعر: 65 روبل</div>
+        <div class="info-box" style="border-color:var(--gold);"><b>تصميم مواقع احترافية - LVL MAX</b><br>السعر: 85 روبل</div>
+        <a href="https://wa.me/966502518285?text=اريد طلب خدمة برمجة" class="wa-btn" style="background:var(--gold); color:black;">اطلب خدمتك الآن</a>
+        <button class="back-btn" onclick="backHome()">العودة</button>
+    </div></div>
+
+    <div id="branchesModal" class="modal"><div class="modal-content">
+        <h2 style="text-align:center; color:var(--neon-blue);">🌐 فروع المملكة</h2>
+        <div class="branch-banner banner-glow"><img src="kaizer.png"><div class="branch-info"><b style="color:var(--gold); font-size:1.2rem;">卍 𝑹𝒀𝑶𝑴𝑬𝑵 𝑫𝑶𝑴𝑨𝑰𝑵 卍</b><p style="font-size:0.9rem;">تأسيس 2013 | الفرع الأقدم والأهم</p><a href="https://chat.whatsapp.com/CRZAVtwbkoMLLqHT07KAEK" style="color:var(--gold); text-decoration:none; font-weight:bold;">دخول الفرع ←</a></div></div>
+        <div class="branch-banner"><img src="hot.png"><div class="branch-info"><b style="color:#fff;">亗 𝑲𝑶𝒁𝑨𝑵 𝑺𝑻𝑰𝑪𝑲𝑬𝑹𝑺</b><a href="https://chat.whatsapp.com/Bh3IGeLzgJuFrPwmngITHM" style="color:var(--neon-blue); text-decoration:none; font-weight:bold;">دخول الفرع ←</a></div></div>
+        <button class="back-btn" onclick="backHome()">العودة</button>
+    </div></div>
+
+    <div id="lawsModal" class="modal"><div class="modal-content"><h2 style="text-align:center; color:var(--crimson);">⚖️ دستور المملكة</h2><div class="info-box">1. يمنع سب الدين أو السياسة نهائياً.</div><div class="info-box">2. احترام الإدارة العليا واجب مقدس على الجميع.</div><div class="info-box">3. يمنع الحرق بجميع أنواعه داخل القروبات.</div><div class="info-box">4. تسريب الخطط أو الأسرار يعتبر خيانة عظمى.</div><div class="info-box">5. يمنع الفتن والتحرش والمضايقات بجميع أشكالها.</div><button class="back-btn" onclick="backHome()">العودة</button></div></div>
+    
+    <div id="promoModal" class="modal"><div class="modal-content"><h2 style="text-align:center; color:var(--neon-blue);">🏛️ بروتوكول الترقيات</h2><div class="info-box">🎖️ <b>الكولونيل:</b> إضافة 150+ عضو جديد.</div><div class="info-box">👑 <b>الملك/ـة:</b> إضافة 100+ عضو جديد.</div><div class="info-box">⚔️ <b>المشرف:</b> يتم اختياره بناءً على الولاء والكفاءة.</div><div class="info-box"><span class="rank-green">🌱 المبادر:</span> إضافة 30+ عضو جديد.</div><button class="back-btn" onclick="backHome()">العودة</button></div></div>
+
+    <script>
+        let sIdx = 0; setInterval(() => { const s = document.getElementById('slider'); if(s) { sIdx = (sIdx + 1) % 4; s.style.transform = "translateX(" + (sIdx * 25) + "%)"; } }, 4500);
+        function toggleDrawer() { document.getElementById("sideDrawer").classList.toggle("active"); }
+        function openSection(id) {
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+            document.getElementById("mainUI").style.display = "none";
+            document.getElementById("sideDrawer").classList.remove("active");
+            document.getElementById(id).style.display = "block";
+            window.scrollTo(0,0);
+        }
+        function backHome() {
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+            document.getElementById("mainUI").style.display = "flex";
+        }
+    </script>
+</body>
+</html>
+    `;
+    return new Response(html, { headers: { "content-type": "text/html;charset=UTF-8" } });
+  }
+};
